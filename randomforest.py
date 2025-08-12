@@ -14,7 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report
 from sklearn.utils.class_weight import compute_class_weight
-import numpy as np
+#import numpy as np
 
 # X = features, y = label
 # X = df5.drop(columns=["product_type", "product_type_encoded"])
