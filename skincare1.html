@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Skincare Recommender</title>
+    <meta name="description" content="Discover personalized skincare products tailored to your unique skin profile using advanced AI technology.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gradient-to-br">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>AI-Powered Skincare Recommender</h1>
+                <p>
+                    Discover personalized skincare products tailored to your unique skin profile using advanced AI technology.
+                </p>
+            </div>
+
+            <!-- Form -->
+            <div class="form-container">
+                <form id="skincareForm" class="space-y-8">
+                    <!-- Severity Ratings Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">Skin Concerns Severity</h3>
+                        
+                        <div class="form-item">
+                            <label class="form-label">Wrinkles Severity (0-10)</label>
+                            <div class="slider-container">
+                                <input type="range" name="wrinkles" min="0" max="10" value="0" class="slider" id="wrinkles">
+                                <div class="slider-value-display" id="wrinkles-value">0</div>
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            <label class="form-label">Acne Severity (0-10)</label>
+                            <div class="slider-container">
+                                <input type="range" name="acne" min="0" max="10" value="0" class="slider" id="acne">
+                                <div class="slider-value-display" id="acne-value">0</div>
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            <label class="form-label">Dark Circle Severity (0-10)</label>
+                            <div class="slider-container">
+                                <input type="range" name="dark_circles" min="0" max="10" value="0" class="slider" id="dark_circles">
+                                <div class="slider-value-display" id="dark_circles-value">0</div>
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            <label class="form-label">Pigmentation (0-10)</label>
+                            <div class="slider-container">
+                                <input type="range" name="pigmentation" min="0" max="10" value="0" class="slider" id="pigmentation">
+                                <div class="slider-value-display" id="pigmentation-value">0</div>
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            <label class="form-label">Redness (0-10)</label>
+                            <div class="slider-container">
+                                <input type="range" name="redness" min="0" max="10" value="0" class="slider" id="redness">
+                                <div class="slider-value-display" id="redness-value">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Concerns Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">Additional Concerns</h3>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="dark_spots" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Dark Spots</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skin Type Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">Skin Type</h3>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_combination" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Combination</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_dry" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Dry</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_normal" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Normal</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_oily" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Oily</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_sensitive" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Sensitive</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skin Tone Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">Skin Tone</h3>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_brown" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Brown</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_dark" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Dark</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_fair" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Fair</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_medium" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Medium</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="_olive" value="1" class="custom-checkbox">
+                                <label class="checkbox-label">Olive</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn w-full">
+                        Get My Skincare Product Recommendations
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="results-section" style="display: none;">
+                <h3 class="results-title">Your Personalized Recommendations</h3>
+                <div id="results-content">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ✅ Make slider numbers update dynamically
+    document.addEventListener("DOMContentLoaded", function () {
+        const sliders = document.querySelectorAll('input[type="range"]');
+        sliders.forEach(slider => {
+            const valueDisplay = document.getElementById(slider.id + "-value");
+            valueDisplay.textContent = slider.value;
+            slider.addEventListener("input", function () {
+                valueDisplay.textContent = this.value;
+            });
+        });
+    });
+
+    // ✅ Form submission
+    // document.getElementById('skincareForm').addEventListener('submit', async function(e) {
+    //     e.preventDefault();
+        
+    //     const formData = new FormData(this);
+    //     const data = {};
+        
+    //     // Convert form data
+    //     for (let [key, value] of formData.entries()) {
+    //         if (key.includes('_') || key === 'dark_spots') {
+    //             data[key] = 1; // Checkboxes
+    //         } else {
+    //             data[key] = parseFloat(value); // Sliders
+    //         }
+    //     }
+
+    //     // Ensure unchecked checkboxes = 0
+    //     const allCheckboxes = [
+    //         'dark_spots','_combination','_dry','_normal','_oily',
+    //         '_sensitive','_brown','_dark','_fair','_medium','_olive'
+    //     ];
+    //     allCheckboxes.forEach(name => {
+    //         if (!data.hasOwnProperty(name)) {
+    //             data[name] = 0;
+    //         }
+    //     });
+
+    //     try {
+    //         const button = document.querySelector('.submit-btn');
+    //         button.textContent = 'Analyzing...';
+    //         button.disabled = true;
+
+    //         // Call FastAPI backend
+    //         const response = await fetch("http://127.0.0.1:8000/predict", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify(data)
+    //         });
+
+    //         const result = await response.json();
+    //         displayResults(result.recommendations);
+
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //         alert('Failed to get recommendations. Please try again.');
+    //     } finally {
+    //         const button = document.querySelector('.submit-btn');
+    //         button.textContent = 'Get My Skincare Product Recommendations';
+    //         button.disabled = false;
+    //     }
+    // });
+
+
+    // ✅ Form submission with backend key mapping
+document.getElementById('skincareForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {};
+    
+    // Convert form data
+    for (let [key, value] of formData.entries()) {
+        if (key.includes('_') || key === 'dark_spots') {
+            data[key] = 1; // Checkboxes
+        } else {
+            data[key] = parseFloat(value); // Sliders
+        }
+    }
+
+    // Ensure unchecked checkboxes = 0
+    const allCheckboxes = [
+        'dark_spots','_combination','_dry','_normal','_oily',
+        '_sensitive','_brown','_dark','_fair','_medium','_olive'
+    ];
+    allCheckboxes.forEach(name => {
+        if (!data.hasOwnProperty(name)) {
+            data[name] = 0;
+        }
+    });
+
+    // ✅ Map frontend keys → backend keys
+    const payload = {
+        wrinkles_severity: data.wrinkles ?? 0,
+        acne_severity: data.acne ?? 0,
+        dark_circle_severity: data.dark_circles ?? 0,
+        pigmentation: data.pigmentation ?? 0,
+        redness: data.redness ?? 0,
+        dark_spots: data.dark_spots ?? 0,
+        _combination: data._combination ?? 0,
+        _dry: data._dry ?? 0,
+        _normal: data._normal ?? 0,
+        _oily: data._oily ?? 0,
+        _sensitive: data._sensitive ?? 0,
+        _brown: data._brown ?? 0,
+        _dark: data._dark ?? 0,
+        _fair: data._fair ?? 0,
+        _medium: data._medium ?? 0,
+        _olive: data._olive ?? 0,
+    };
+
+    try {
+        const button = document.querySelector('.submit-btn');
+        button.textContent = 'Analyzing...';
+        button.disabled = true;
+
+        // ✅ Send correct payload
+        const response = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        displayResults(result.recommendations);
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to get recommendations. Please try again.');
+    } finally {
+        const button = document.querySelector('.submit-btn');
+        button.textContent = 'Get My Skincare Product Recommendations';
+        button.disabled = false;
+    }
+});
+
+
+    function displayResults(recommendations) {
+        const resultsSection = document.getElementById('results-section');
+        const resultsContent = document.getElementById('results-content');
+        
+        resultsContent.innerHTML = '';
+        
+        if (recommendations && recommendations.length > 0) {
+            recommendations.forEach((item, index) => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-card-content">
+                        <div class="product-name">${item.product}</div>
+                        <span class="product-probability">${Math.round(item.probability * 100)}% match</span>
+                    </div>
+                `;
+                resultsContent.appendChild(productCard);
+            });
+        } else {
+            resultsContent.innerHTML = '<div class="loading">No recommendations found. Please try adjusting your inputs.</div>';
+        }
+        
+        resultsSection.style.display = 'block';
+        setTimeout(() => {
+            resultsSection.classList.add('show');
+        }, 100);
+    }
+    </script>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 # skincareapi.py
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import pandas as pd
@@ -35,6 +36,7 @@ app = FastAPI(
     version="1.0"
 )
 
+# ---------- Request Schema ----------
 class SkinRequest(BaseModel):
     wrinkles_severity: float = Field(..., ge=0, le=10)
     acne_severity: float = Field(..., ge=0, le=10)
@@ -44,36 +46,51 @@ class SkinRequest(BaseModel):
     dark_spots: int = Field(..., ge=0, le=1)
 
     # renamed vars, but accept JSON keys with underscores
-    combination: Optional[int] = Field(0, ge=0, le=1, alias="_combination")
+    oily: Optional[int] = Field(0, ge=0, le=1, alias="_oily")
     dry: Optional[int] = Field(0, ge=0, le=1, alias="_dry")
     normal: Optional[int] = Field(0, ge=0, le=1, alias="_normal")
-    oily: Optional[int] = Field(0, ge=0, le=1, alias="_oily")
     sensitive: Optional[int] = Field(0, ge=0, le=1, alias="_sensitive")
-    brown: Optional[int] = Field(0, ge=0, le=1, alias="_brown")
-    dark: Optional[int] = Field(0, ge=0, le=1, alias="_dark")
     fair: Optional[int] = Field(0, ge=0, le=1, alias="_fair")
-    medium: Optional[int] = Field(0, ge=0, le=1, alias="_medium")
+    dark: Optional[int] = Field(0, ge=0, le=1, alias="_dark")
     olive: Optional[int] = Field(0, ge=0, le=1, alias="_olive")
+    brown: Optional[int] = Field(0, ge=0, le=1, alias="_brown")
+    medium: Optional[int] = Field(0, ge=0, le=1, alias="_medium")
+    combination: Optional[int] = Field(0, ge=0, le=1, alias="_combination")
 
     class Config:
         populate_by_name = True
+        allow_population_by_field_name = True
+        allow_population_by_alias = True
 
+# ---------- Response Schema ----------
 class PredictionResponse(BaseModel):
     recommended: List[str]
     probabilities: dict
     threshold: float
 
+# ---------- Helper ----------
 def prepare_input_df(req: SkinRequest):
     data = req.dict(by_alias=True)  # keep JSON keys with underscores
     input_df = pd.DataFrame([data])
 
+    # add missing features as 0
     for col in feature_order:
         if col not in input_df.columns:
             input_df[col] = 0
 
+    # keep only features that model expects
     input_df = input_df[feature_order].astype(float)
+
+    # Debug prints
+    print("\n--- DEBUG ---")
+    print("Feature order (expected):", feature_order)
+    print("Input df columns:", input_df.columns.tolist())
+    print("Input df values:", input_df.values.tolist())
+    print("--------------\n")
+
     return input_df
 
+# ---------- Endpoints ----------
 @app.post("/predict", response_model=PredictionResponse)
 def predict(request: SkinRequest, threshold: float = DEFAULT_THRESHOLD):
     X = prepare_input_df(request)
@@ -98,3 +115,12 @@ def predict(request: SkinRequest, threshold: float = DEFAULT_THRESHOLD):
 @app.get("/")
 def root():
     return {"status": "ok", "model_loaded": True, "n_labels": len(mlb.classes_)}
+
+# ---------- CORS Middleware ----------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   # allow all origins for dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
