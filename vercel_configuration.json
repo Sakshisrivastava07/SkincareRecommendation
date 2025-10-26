@@ -1,0 +1,20 @@
+{
+  "builds": [
+    {
+      "src": "skincareapi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "15mb" },
+      "excludeFiles": ["app.py"]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/predict",
+      "dest": "skincareapi.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/skincare1.html"
+    }
+  ]
+}
