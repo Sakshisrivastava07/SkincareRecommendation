@@ -160,57 +160,6 @@
         });
     });
 
-    // ✅ Form submission
-    // document.getElementById('skincareForm').addEventListener('submit', async function(e) {
-    //     e.preventDefault();
-        
-    //     const formData = new FormData(this);
-    //     const data = {};
-        
-    //     // Convert form data
-    //     for (let [key, value] of formData.entries()) {
-    //         if (key.includes('_') || key === 'dark_spots') {
-    //             data[key] = 1; // Checkboxes
-    //         } else {
-    //             data[key] = parseFloat(value); // Sliders
-    //         }
-    //     }
-
-    //     // Ensure unchecked checkboxes = 0
-    //     const allCheckboxes = [
-    //         'dark_spots','_combination','_dry','_normal','_oily',
-    //         '_sensitive','_brown','_dark','_fair','_medium','_olive'
-    //     ];
-    //     allCheckboxes.forEach(name => {
-    //         if (!data.hasOwnProperty(name)) {
-    //             data[name] = 0;
-    //         }
-    //     });
-
-    //     try {
-    //         const button = document.querySelector('.submit-btn');
-    //         button.textContent = 'Analyzing...';
-    //         button.disabled = true;
-
-    //         // Call FastAPI backend
-    //         const response = await fetch("http://127.0.0.1:8000/predict", {
-    //             method: "POST",
-    //             headers: { "Content-Type": "application/json" },
-    //             body: JSON.stringify(data)
-    //         });
-
-    //         const result = await response.json();
-    //         displayResults(result.recommendations);
-
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //         alert('Failed to get recommendations. Please try again.');
-    //     } finally {
-    //         const button = document.querySelector('.submit-btn');
-    //         button.textContent = 'Get My Skincare Product Recommendations';
-    //         button.disabled = false;
-    //     }
-    // });
 
 
     // ✅ Form submission with backend key mapping
@@ -265,15 +214,17 @@ document.getElementById('skincareForm').addEventListener('submit', async functio
         button.textContent = 'Analyzing...';
         button.disabled = true;
 
+        const api_endpoint = '/predict'; // Use the Vercel relative path
+
         // ✅ Send correct payload
-        const response = await fetch("http://127.0.0.1:8000/predict", {
+        const response = await fetch(api_endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
-        displayResults(result.recommendations);
+        displayResults(result.recommended);
 
     } catch (error) {
         console.error('Error:', error);
@@ -314,6 +265,51 @@ document.getElementById('skincareForm').addEventListener('submit', async functio
         }, 100);
     }
     </script>
+
+    <script>
+        // --- JavaScript to apply the dynamic gradient fill (for WebKit) ---
+        const sliders = document.querySelectorAll('.slider');
+
+        sliders.forEach(slider => {
+            // Function to calculate the pink fill percentage
+            const updateSliderFill = (input) => {
+                const min = input.min || 0;
+                const max = input.max || 100;
+                const value = input.value;
+                
+                // Calculate the percentage
+                const percentage = (value - min) / (max - min) * 100;
+
+                // Apply a linear gradient: Pink from 0% to N%, then grey background from N% to 100%
+                const babyPink = '#F4C2C2';
+                // Note: To use your CSS variable, you might need to fetch its computed value, 
+                // but for simplicity and cross-browser reliability here, we'll use a standard color 
+                // or assume your CSS variable is simple. If var(--border-light) is a simple color 
+                // like '#ccc', this is fine.
+                const trackBackground = 'var(--border-light)'; 
+
+                // Set the style directly on the input element
+                input.style.background = `linear-gradient(to right, ${babyPink} 0%, ${babyPink} ${percentage}%, ${trackBackground} ${percentage}%, ${trackBackground} 100%)`;
+            };
+
+            // Apply the fill immediately on load
+            updateSliderFill(slider);
+
+            // Update the fill whenever the slider value changes
+            slider.addEventListener('input', () => {
+                updateSliderFill(slider);
+            });
+        });
+    </script>
+
+
+
+
+
+
+
+
+
 
 </body>
 </html>

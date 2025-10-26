@@ -125,10 +125,17 @@ body {
     width: 100%;
     height: 8px;
     border-radius: 5px;
-    background: var(--border-light);
+    /* background: var(--border-light); */
+    background:transparent;
     outline: none;
     /* -webkit-appearance: none; */
     cursor: pointer;
+}
+
+.slider::-moz-range-progress {
+    /* Baby Pink Color */
+    background-color: #d854b1; 
+    border-radius: 5px;
 }
 
 .slider::-webkit-slider-thumb {
