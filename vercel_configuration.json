@@ -3,7 +3,8 @@
     {
       "src": "skincareapi.py",
       "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb" }
+      "config": { "maxLambdaSize": "15mb" },
+      "excludeFiles": ["app.py"]
     }
   ],
   "routes": [
